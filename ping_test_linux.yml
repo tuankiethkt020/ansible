@@ -1,0 +1,7 @@
+---
+- name: Test connection to linux-web hosts
+  hosts: linux-web
+  gather_facts: no
+  tasks:
+    - name: Ping test linux-web
+      ping:
