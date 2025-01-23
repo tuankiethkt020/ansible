@@ -1,0 +1,17 @@
+---
+- name: Clone web code from ansible-web repository
+  hosts: linux-web
+  become: yes
+  tasks:
+    - name: Install git if not installed
+      apt:
+        name: git
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Clone the ansible-web repository
+      git:
+        repo: 'https://github.com/tuankiethkt020/ansible-web.git'
+        dest: '/home/admin1/Desktop/ansible-web'
+        version: main  # Hoặc tag/release branch mà bạn muốn
+      become_user: admin1  # Thay thế bằng người dùng mà bạn muốn sử dụng để clone repo
