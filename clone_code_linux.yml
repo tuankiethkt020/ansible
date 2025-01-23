@@ -1,7 +1,8 @@
----
 - name: Clone web code from ansible-web repository
-  hosts: linux-web
+  hosts: linux-web  # Đảm bảo tên này trùng khớp với nhóm trong inventory
   become: yes
+  vars_files:
+    - vault_passwords.yml
   tasks:
     - name: Install git if not installed
       apt:
