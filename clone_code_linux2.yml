@@ -1,0 +1,52 @@
+- name: Clone web code from ansible-web repository
+  hosts: linux-web
+  become: yes
+  vars_files:
+    - vault_passwords.yml
+  tasks:
+    # - name: Gather the package facts
+    #   ansible.builtin.package_facts:
+    #     manager: auto
+
+    # - name: Show Facts
+    #   ansible.builtin.debug:
+    #     msg: "{{ ansible_facts.packages }}"
+
+    # - name: Print the package names only
+    #   ansible.builtin.debug:
+    #     msg: "{{ ansible_facts.packages | dict2items | map(attribute='key') }}"
+
+    - name: Check if Git is installed
+      ansible.builtin.debug:
+        msg: "Git is installed: {{ ansible_facts.packages.git }}"
+      when: ansible_facts.packages.git is defined  # Kiểm tra nếu Git đã được cài đặt
+
+    - name: Install git if not installed
+      apt:
+        name: git
+        state: present
+      when: ansible_facts.packages.git is not defined and ansible_os_family == "Debian"
+
+    - name: Show git installation result
+      debug:
+        msg: "Git installation task result: Git is installed"
+      when: ansible_facts.packages.git is defined  # Chỉ hiển thị thông báo nếu git đã được cài
+
+    - name: Check if ansible-web repository exists on Desktop
+      stat:
+        path: "/home/admin1/Desktop/ansible-web"
+      register: web_repo_check
+
+    - name: Show ansible-web repository check result
+      debug:
+        msg: "Ansible-web repo check result: {{ web_repo_check }}"
+
+    - name: Clone the ansible-web repository if not already present
+      git:
+        repo: 'https://github.com/tuankiethkt020/ansible-web.git'
+        dest: '/home/admin1/Desktop/ansible-web'
+        version: main
+
+    - name: Show clone result
+      debug:
+        msg: "Clone task result: Repository cloned at {{ '/home/admin/Desktop/ansible-web' if not web_repo_check.stat.exists else 'Already exists' }}"
